@@ -1,7 +1,7 @@
 ﻿import * as Ieee1609Dot2 from 'Ieee1609Dot2js';
-import {Uint8, Choice, Sequence, SequenceOf, Enumerated, Boolean, Integer, IA5String } from 'asn1js';
+import {Uint8, Choice, Sequence, SequenceOf, Enumerated, Boolean, Integer, IA5String } from 'asnjs';
 
-class EnrolmentResponseCode extends Enumerated([
+export class EnrolmentResponseCode extends Enumerated([
     'ok',
     'cantparse', //valid for any structure
     'badcontenttype', //not encrypted, not signed, not enrolmentrequest
@@ -19,7 +19,7 @@ class EnrolmentResponseCode extends Enumerated([
     Enumerated.Extension
 ]) { }
 
-class AuthorizationResponseCode extends Enumerated([
+export class AuthorizationResponseCode extends Enumerated([
     'ok',
     //ITS -> AA
     'its_aa_cantparse', //valid for any structure
@@ -54,7 +54,7 @@ class AuthorizationResponseCode extends Enumerated([
     Enumerated.Extension
 ]) { }
 
-class AuthorizationValidationResponseCode extends Enumerated([
+export class AuthorizationValidationResponseCode extends Enumerated([
     'ok',
     'cantparse', //valid for any structure
     'badcontenttype', //not encrypted, not signed, not permissionsverificationrequest
@@ -73,7 +73,7 @@ class AuthorizationValidationResponseCode extends Enumerated([
     Enumerated.Extension
 ]) { }
 
-class PublicKeys extends Sequence([
+export class PublicKeys extends Sequence([
     {
         name: 'verificationKey',
         type: Ieee1609Dot2.PublicVerificationKey
@@ -84,7 +84,7 @@ class PublicKeys extends Sequence([
     }
 ]) { }
 
-class CertificateSubjectAttributes extends Sequence([
+export class CertificateSubjectAttributes extends Sequence([
     {
         name: 'id',
         optional: true,
@@ -114,7 +114,7 @@ class CertificateSubjectAttributes extends Sequence([
     }
 ]) { }
 
-class SharedAtRequest extends Sequence([
+export class SharedAtRequest extends Sequence([
     {
         name: 'eaId',
         type: Ieee1609Dot2.HashedId8
@@ -132,7 +132,7 @@ class SharedAtRequest extends Sequence([
     }
 ]) { }
 
-class ToBeSignedCrl extends Sequence([
+export class ToBeSignedCrl extends Sequence([
     {
         name: 'version',
         type: Integer()
@@ -150,7 +150,7 @@ class ToBeSignedCrl extends Sequence([
     }
 ]) { }
 
-class CtlFormat extends Sequence([
+export class CtlFormat extends Sequence([
     {
         name: 'version',
         type: Integer()
@@ -216,7 +216,7 @@ class CtlFormat extends Sequence([
     }
 ]) { }
 
-class CaCertificateRequest extends Sequence([
+export class CaCertificateRequest extends Sequence([
     {
         name: 'publicKeys',
         type: PublicKeys
@@ -228,7 +228,7 @@ class CaCertificateRequest extends Sequence([
     }
 ]) { }
 
-class EcSignature extends Choice([
+export class EcSignature extends Choice([
     {
         name: 'encryptedEcSignature',
         type: Ieee1609Dot2.Data
@@ -238,114 +238,125 @@ class EcSignature extends Choice([
     }
 ]) { }
 
+export class InnerEcResponse extends Sequence([
+    {
+        name: 'requestHash',
+        type: Ieee1609Dot2.OctetString16
+    }, {
+        name: 'responseCode',
+        type: EnrolmentResponseCode
+    }, {
+        name: 'certificate',
+        optional: true,
+        type: Ieee1609Dot2.Certificate
+    }, {
+        extension:true
+    }
+]){}
+export class InnerAtRequest extends Sequence([
+    {
+        name: 'publicKeys',
+        type: PublicKeys
+    }, {
+        name: 'hmacKey',
+        type: Ieee1609Dot2.OctetString32
+    }, {
+        name: 'sharedAtRequest',
+        type: SharedAtRequest
+    }, {
+        name: 'ecSignature',
+        type: EcSignature
+    }, {
+        extension:true
+    }
+]){}
+export class InnerAtResponse extends Sequence([
+    {
+        name: 'requestHash',
+        type: Ieee1609Dot2.OctetString16
+    }, {
+        name: 'responseCode',
+        type: AuthorizationResponseCode
+    }, {
+        name: 'certificate',
+        optional: true,
+        type: Ieee1609Dot2.Certificate
+    }, {
+        extension: true
+    }
+]){}
+
+export class AuthorizationValidationRequest extends Sequence([
+    {
+        name: 'sharedAtRequest',
+        type: SharedAtRequest
+    }, {
+        name: 'ecSignature',
+        type: EcSignature
+    }, {
+        extension:true
+    }
+]){}
+
+export class AuthorizationValidationResponse extends Sequence([
+    {
+        name: 'requestHash',
+        type: Ieee1609Dot2.OctetString16
+    }, {
+        name: 'responseCode',
+        type: AuthorizationValidationResponseCode
+    }, {
+        name: 'confirmedSubjectAttributes',
+        optional: true,
+        type: CertificateSubjectAttributes
+    }, {
+        extension: true
+    }
+]){}
+
+export class EtsiTs102941DataContent extends Choice([
+    {
+        name: 'enrolmentRequest',
+        type: Ieee1609Dot2.Data
+    }, {
+        name: 'enrolmentResponse',
+        type: InnerEcResponse
+    }, {
+        name: 'authorizationRequest',
+        type: InnerAtRequest
+    }, {
+        name: 'authorizationResponse',
+        type: InnerAtResponse
+    }, {
+        name: 'certificateRevocationList',
+        type: ToBeSignedCrl
+    }, {
+        name: 'certificateTrustListTlm',
+        type: CtlFormat
+    }, {
+        name: 'certificateTrustListRca',
+        type: CtlFormat
+    }, {
+        name: 'authorizationValidationRequest',
+        type: AuthorizationValidationRequest
+    }, {
+        name: 'authorizationValidationResponse',
+        type: AuthorizationValidationResponse
+    }, {
+        name: 'caCertificateRequest',
+        type: CaCertificateRequest
+    }, {
+        estension:true
+    }
+])
+{};
+
 export class EtsiTs102941Data extends Sequence([
     {
         name: 'version',
         type: Uint8,
     }, {
         name: 'content',
-        type: Choice([
-            {
-                name: 'enrolmentRequest',
-                type: Ieee1609Dot2.Data
-            }, {
-                name: 'enrolmentResponse',
-                type: Sequence([
-                    {
-                        name: 'requestHash',
-                        type: Ieee1609Dot2.OctetString16
-                    }, {
-                        name: 'responseCode',
-                        type: EnrolmentResponseCode
-                    }, {
-                        name: 'certificate',
-                        optional: true,
-                        type: Ieee1609Dot2.Certificate
-                    }, {
-                        extension:true
-                    }
-                ])
-            }, {
-                name: 'authorizationRequest',
-                type: Sequence([
-                    {
-                        name: 'publicKeys',
-                        type: PublicKeys
-                    }, {
-                        name: 'hmacKey',
-                        type: Ieee1609Dot2.OctetString32
-                    }, {
-                        name: 'sharedAtRequest',
-                        type: SharedAtRequest
-                    }, {
-                        name: 'ecSignature',
-                        type: EcSignature
-                    }, {
-                        extension:true
-                    }
-                ])
-            }, {
-                name: 'authorizationResponse',
-                type: Sequence([
-                    {
-                        name: 'requestHash',
-                        type: Ieee1609Dot2.OctetString16
-                    }, {
-                        name: 'responseCode',
-                        type: AuthorizationResponseCode
-                    }, {
-                        name: 'certificate',
-                        optional: true,
-                        type: Ieee1609Dot2.Certificate
-                    }, {
-                        extension: true
-                    }
-                ])
-            }, {
-                name: 'certificateRevocationList',
-                type: ToBeSignedCrl
-            }, {
-                name: 'certificateTrustListTlm',
-                type: CtlFormat
-            }, {
-                name: 'certificateTrustListRca',
-                type: CtlFormat
-            }, {
-                name: 'authorizationValidationRequest',
-                type: Sequence([
-                    {
-                        name: 'sharedAtRequest',
-                        type: SharedAtRequest
-                    }, {
-                        name: 'ecSignature',
-                        type: EcSignature
-                    }, {
-                        extension:true
-                    }
-                ])
-            }, {
-                name: 'authorizationValidationResponse',
-                type: Sequence([
-                    {
-                        name: 'requestHash',
-                        type: Ieee1609Dot2.OctetString16
-                    }, {
-                        name: 'responseCode',
-                        type: AuthorizationValidationResponseCode
-                    }, {
-                        name: 'confirmedSubjectAttributes',
-                        optional: true,
-                        type: CertificateSubjectAttributes
-                    }, {
-                        extension: true
-                    }
-                ])
-            }, {
-                name: 'caCertificateRequest',
-                type: CaCertificateRequest
-            }, {
-                estension:true
-            }
-        ])
+        type: EtsiTs102941DataContent
     }
 ]) { }
