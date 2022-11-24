@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "asnjs": "fillabs/asnjs",
-    "Ieee1609Dot2js": "fillabs/Ieee1609Dot2js"
+    "Ieee1609Dot2js": "fillabs/Ieee1609Dot2js",
+    "Ieee1609Dot2Dot1js": "fillabs/Ieee1609Dot2Dot1js"
   },
   "author": "Denis Filatov",
   "license": "MIT",

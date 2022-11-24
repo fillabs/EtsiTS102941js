@@ -314,6 +314,19 @@ export class AuthorizationValidationResponse extends Sequence([
     }
 ]){}
 
+export class ToBeSignedLinkCertificate extends Sequence ([
+    {
+        name: "expiryTime",
+        type: Time32
+    },{
+        name: "certificateHash",
+        type: HashedData
+    },{
+        extension:true
+    }
+]){}
+  
+
 export class EtsiTs102941DataContent extends Choice([
     {
         name: 'enrolmentRequest',
@@ -347,6 +360,36 @@ export class EtsiTs102941DataContent extends Choice([
         type: CaCertificateRequest
     }, {
         estension:true
+    }, {
+        name: 'linkCertificateTlm',
+        type: ToBeSignedLinkCertificate
+    }, {
+        name: 'singleSignedLinkCertificateRca',
+        type: ToBeSignedLinkCertificate
+    }, {
+        name: 'doubleSignedlinkCertificateRca',
+        type: Ieee1609Dot2.Data
+    }, 
+    
+    // Butterfly authorisation
+    {
+        name: 'butterflyAuthorizationRequest',
+        type: EeRaCertRequest
+    }, {
+        name: 'x509SignedbutterflyAuthorizationRequest',
+        type: EtsiTs102941ButterflyAuthorizationRequest_X509Signed
+    }, {
+        name: 'butterflyAuthorizationResponse',
+        type: RaEeCertInfo
+    }, {
+        name: 'butterflyCertificateRequest',
+        type: RaAcaCertRequest
+    }, {
+        name: 'butterflyCertificateResponse',
+        type: AcaRaCertResponse
+    }, {
+        name: 'butterflyAtDownloadRequest',
+        type: EeRaDownloadRequest
     }
 ])
 {};
