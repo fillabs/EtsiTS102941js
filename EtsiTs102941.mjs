@@ -1,5 +1,6 @@
-﻿import * as Ieee1609Dot2 from 'Ieee1609Dot2js';
+import * as Ieee1609Dot2 from 'Ieee1609Dot2js';
 import {Uint8, Choice, Sequence, SequenceOf, Enumerated, Boolean, Integer, IA5String } from 'asnjs';
+import {EeRaCertRequest, RaEeCertInfo, RaAcaCertRequest, AcaRaCertResponse, EeRaDownloadRequest } from 'Ieee1609Dot2Dot1js';
 
 export class EnrolmentResponseCode extends Enumerated([
     'ok',
@@ -317,15 +318,31 @@ export class AuthorizationValidationResponse extends Sequence([
 export class ToBeSignedLinkCertificate extends Sequence ([
     {
         name: "expiryTime",
-        type: Time32
+        type: Ieee1609Dot2.Time32
     },{
         name: "certificateHash",
-        type: HashedData
+        type: Ieee1609Dot2.HashedData
     },{
         extension:true
     }
 ]){}
   
+export function EtsiTs102941ButterflyAuthorizationRequest_X509Signed ( inner ) {
+    var C = class EtsiTs102941ButterflyAuthorizationRequest_X509Signed extends Ieee1609Dot2Data {
+        static from_oer(dc) {
+            /** @type {Ieee1609Dot2Data} */
+            let outer = super.from_oer(dc);
+            try {
+                outer.content.signedX509CertificateRequest.content = inner.from_oer(outer.content.signedX509CertificateRequest.dataCursor());
+            } catch(e){
+            }
+            return outer;
+        }
+    };
+    if(inner.fields)
+        C.innerFields = inner.fields;
+    return C;
+}
 
 export class EtsiTs102941DataContent extends Choice([
     {
